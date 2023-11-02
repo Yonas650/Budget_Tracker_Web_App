@@ -1,112 +1,92 @@
 The content below is an example project proposal / requirements document. Replace the text below the lines marked "__TODO__" with details specific to your project. Remove the "TODO" lines.
 
-(__TODO__: your project name)
 
-# Shoppy Shoperson 
+# Personal Budget Tracker 
 
 ## Overview
 
-(__TODO__: a brief one or two paragraph, high-level description of your project)
-
-Remembering what to buy at the grocery store is waaaaay too difficult. Also, shopping for groceries when you're hungry leads to regrettable purchases. Sooo... that's where Shoppy Shoperson comes in!
-
-Shoppy Shoperson is a web app that will allow users to keep track of multiple grocery lists. Users can register and login. Once they're logged in, they can create or view their grocery list. For every list that they have, they can add items to the list or cross off items.
-
+Managing personal finances can often seem like an overwhelming task. Whether it's saving for future goals or tracking daily expenses, keeping a detailed record is essential. "Personal Budget Tracker" is designed to simplify this process. This web app provides a user-friendly interface for individuals to manage their income and expenses, view financial summaries, and set budgets for different categories, ensuring they are always informed about their financial health.
 
 ## Data Model
 
-(__TODO__: a description of your application's data and their relationships to each other) 
+The application will primarily store Users, Budgets, and Transactions:
 
-The application will store Users, Lists and Items
+* Users can have multiple budgets (via references).
+* Each budget can have multiple transactions (by embedding).
 
-* users can have multiple lists (via references)
-* each list can have multiple items (by embedding)
-
-(__TODO__: sample documents)
 
 An Example User:
 
 ```javascript
 {
-  username: "shannonshopper",
-  hash: // a password hash,
-  lists: // an array of references to List documents
+  username: "johnDoe",
+  password: // a password hash,
+  email: "johndoe@email.com",
+  budgets: // an array of references to Budget documents
 }
+
 ```
 
-An Example List with Embedded Items:
+Example Budget with Embedded Transactions:
 
 ```javascript
 {
-  user: // a reference to a User object
-  name: "Breakfast foods",
-  items: [
-    { name: "pancakes", quantity: "9876", checked: false},
-    { name: "ramen", quantity: "2", checked: true},
-  ],
-  createdAt: // timestamp
+  user: // a reference to a User object,
+  category: "Food and Dining",
+  allocatedAmount: 500, // in dollars,
+  transactions: [
+    { description: "Dinner at ABC Restaurant", amount: 50, date: "YYYY-MM-DD", type: "expense"},
+    { description: "Salary", amount: 1500, date: "YYYY-MM-DD", type: "income"},
+  ]
 }
 ```
 
 
 ## [Link to Commented First Draft Schema](db.mjs) 
 
-(__TODO__: create a first draft of your Schemas in db.mjs and link to it)
+- [Database Schemas (db.mjs)](/db.mjs)
+   - This file contains the mongoose schemas used in the application.
 
 ## Wireframes
 
-(__TODO__: wireframes for all of the pages on your site; they can be as simple as photos of drawings or you can use a tool like Balsamiq, Omnigraffle, etc.)
+`/dashboard` - Main dashboard overview.
+![Dashboard Wireframe](documentation/dashboard.jpg)
 
-/list/create - page for creating a new shopping list
+`/budgets` - Page displaying all user budgets.
+![Budgets Wireframe](documentation/budgets.jpg)
 
-![list create](documentation/list-create.png)
+`/transactions` - Page for managing transactions.
+![Transactions Wireframe](documentation/transactions.jpg)
 
-/list - page for showing all shopping lists
-
-![list](documentation/list.png)
-
-/list/slug - page for showing specific shopping list
-
-![list](documentation/list-slug.png)
+`/userprof` - Page for managing transactions.
+![Userprof Wireframe](documentation/userprof.jpg)
 
 ## Site map
 
-(__TODO__: draw out a site map that shows how pages are related to each other)
-
-Here's a [complex example from wikipedia](https://upload.wikimedia.org/wikipedia/commons/2/20/Sitemap_google.jpg), but you can create one without the screenshots, drop shadows, etc. ... just names of pages and where they flow to.
+`/map` - Page for managing transactions.
+![Site Map](documentation/map.jpg)
 
 ## User Stories or Use Cases
 
-(__TODO__: write out how your application will be used through [user stories](http://en.wikipedia.org/wiki/User_story#Format) and / or [use cases](https://en.wikipedia.org/wiki/Use_case))
-
-1. as non-registered user, I can register a new account with the site
-2. as a user, I can log in to the site
-3. as a user, I can create a new grocery list
-4. as a user, I can view all of the grocery lists I've created in a single list
-5. as a user, I can add items to an existing grocery list
-6. as a user, I can cross off items in an existing grocery list
+1. As a non-registered user, I can register a new account with the site.
+2. As a user, I can log in to access my financial dashboard.
+3. As a user, I can set budgets for various categories like Food, Entertainment, and Utilities.
+4. As a user, I can add income and expense transactions.
+5. As a user, I can view a summary of my financial health, including total income, expenses, and balance.
+6. As a user, I can view graphical representations of my income and expense trends.
+7. As a user, I can change my personal details and password
 
 ## Research Topics
 
-(__TODO__: the research topics that you're planning on working on along with their point values... and the total points of research topics listed)
-
-* (5 points) Integrate user authentication
-    * I'm going to be using passport for user authentication
-    * And account has been made for testing; I'll email you the password
-    * see <code>cs.nyu.edu/~jversoza/ait-final/register</code> for register page
-    * see <code>cs.nyu.edu/~jversoza/ait-final/login</code> for login page
-* (4 points) Perform client side form validation using a JavaScript library
-    * see <code>cs.nyu.edu/~jversoza/ait-final/my-form</code>
-    * if you put in a number that's greater than 5, an error message will appear in the dom
-* (5 points) vue.js
-    * used vue.js as the frontend framework; it's a challenging library to learn, so I've assigned it 5 points
-
-10 points total out of 8 required points (___TODO__: addtional points will __not__ count for extra credit)
-
+* (5 points) Integrate user authentication using JWT (JSON Web Tokens).
+* (4 points) Client-side form validation(express-validator) to ensure correct data entry by users.
+* (3 points) Use of a charting library, such as Chart.js, to visually represent financial data.
+12 points total out of 8 required points
 
 ## [Link to Initial Main Project File](app.mjs) 
 
-(__TODO__: create a skeleton Express application with a package.json, app.mjs, views folder, etc. ... and link to your initial app.mjs)
+- [Application Entry Point (app.mjs)](/app.mjs)
+   - This file is the main entry point of the application, where the express application is configured and run.
 
 ## Annotations / References Used
 
