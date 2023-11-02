@@ -55,10 +55,10 @@ Example Budget with Embedded Transactions:
 `/budgets` - Page displaying all user budgets.
 ![Budgets Wireframe](documentation/budgets.jpg)
 
-`/transactions` - Page for managing transactions.
+`/transactions` - Page for adding new transactions.
 ![Transactions Wireframe](documentation/transactions.jpg)
 
-`/userprof` - Page for managing transactions.
+`/userprof` - Page for managing user profile.
 ![Userprof Wireframe](documentation/userprof.jpg)
 
 ## Site map
