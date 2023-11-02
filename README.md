@@ -81,7 +81,7 @@ Example Budget with Embedded Transactions:
 * (5 points) Integrate user authentication using JWT (JSON Web Tokens).
 * (4 points) Client-side form validation(express-validator) to ensure correct data entry by users.
 * (3 points) Use of a charting library, such as Chart.js, to visually represent financial data.
-12 points total out of 8 required points
+12 points total out of 10 required points
 
 ## [Link to Initial Main Project File](app.mjs) 
 
