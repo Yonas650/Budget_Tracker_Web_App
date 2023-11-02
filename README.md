@@ -63,7 +63,7 @@ Example Budget with Embedded Transactions:
 
 ## Site map
 
-`/map` - Page for managing transactions.
+`/map` - Site map.
 ![Site Map](documentation/map.jpg)
 
 ## User Stories or Use Cases
@@ -89,9 +89,4 @@ Example Budget with Embedded Transactions:
    - This file is the main entry point of the application, where the express application is configured and run.
 
 ## Annotations / References Used
-
-(__TODO__: list any tutorials/references/etc. that you've based your code off of)
-
-1. [passport.js authentication docs](http://passportjs.org/docs) - (add link to source code that was based on this)
-2. [tutorial on vue.js](https://vuejs.org/v2/guide/) - (add link to source code that was based on this)
 
