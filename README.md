@@ -78,10 +78,12 @@ Example Budget with Embedded Transactions:
 
 ## Research Topics
 
-* (5 points) Integrate user authentication using JWT (JSON Web Tokens).
-* (4 points) Client-side form validation(express-validator) to ensure correct data entry by users.
-* (3 points) Use of a charting library, such as Chart.js, to visually represent financial data.
-12 points total out of 10 required points
+* (6 points) Vue.js as the front-end framework
+- What is it?: Vue.js is a progressive JavaScript framework used to create interactive user interfaces.
+- Why use it?: It is user-friendly, integrates well with other libraries and projects, and has a supportive community. Its simplicity does not sacrifice power, making it a versatile choice for many projects.
+* (4 points) Client-side Form Validation with VeeValidate
+- What is it?: VeeValidate is a library tailored for Vue.js that simplifies client-side form validation. It offers a suite of validation rules that can be applied to form fields to check the correctness of user inputs before the form is submitted.
+- Why use it?: Employing VeeValidate enhances user experience by providing immediate, field-level feedback. It aids in maintaining data integrity, reduces server load by catching errors client-side, and integrates seamlessly with Vue.js to build robust forms quickly and efficiently.
 
 ## [Link to Initial Main Project File](app.mjs) 
 
