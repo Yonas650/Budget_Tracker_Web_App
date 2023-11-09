@@ -6,7 +6,7 @@ import mongoose from 'mongoose';
 import { User } from './db.mjs'; 
 import { Transaction} from './db.mjs'; 
 import { Budget } from './db.mjs';
-import bcrypt from 'bcrypt'; // bcrypt for password hashing
+import bcrypt from 'bcryptjs'; // bcrypt for password hashing
 import path from 'path';
 import { fileURLToPath } from 'url';
 
