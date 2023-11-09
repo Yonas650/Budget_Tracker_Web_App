@@ -18,10 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(flash());
 // Connect to MongoDB
-mongoose.connect(process.env.DSN, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect(process.env.DSN)
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.error('MongoDB connection error:', err));
 
