@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budgets - Personal Budget Tracker</title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+    <div id="budget-app">
+        <h1>Budgets</h1>
+        {{#if messages.error}}
+  <div class="error-message">{{messages.error}}</div>
+{{/if}}
+
+{{#if messages.success}}
+  <div class="success-message">{{messages.success}}</div>
+{{/if}}
+
+        <!-- Form to enter income -->
+        <form action="/api/set-income" method="post">
+            <label for="income">Enter your income:</label>
+            <input type="number" id="income" name="income" required>
+            <button type="submit">Set Income</button>
+        </form>
+
+        <!-- Form to add a new budget -->
+        <form action="/budgets/create" method="post">
+            <label for="newCategory">Budget Category:</label>
+            <input type="text" id="newCategory" name="category" required>
+            
+            <label for="newAllocatedAmount">Allocated Amount:</label>
+            <input type="number" id="newAllocatedAmount" name="allocatedAmount" required>
+            
+            <button type="submit">Add Budget</button>
+        </form>
+
+        {{#if userBudgets.length}}
+    <table>
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Allocated</th>
+                <th>Left</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each userBudgets}}
+                <tr>
+                    <td>{{this.category}}</td>
+                    <td>{{this.allocatedAmount}}</td>
+                    <td>{{this.amountLeft}}</td>
+                    <td>
+
+                        <!-- Form to delete a budget -->
+                        <form action="/budgets/delete/{{this._id}}" method="post" style="display: inline;">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+{{else}}
+    <p>No budgets found. Add a budget to get started.</p>
+{{/if}}
+
+
+        <a href="/dashboard">Dashboard</a>
+        <a href="/transactions">Transactions</a>
+    </div>
+</body>
+</html>

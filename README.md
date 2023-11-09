@@ -69,8 +69,8 @@ Example Budget with Embedded Transactions:
 ## User Stories or Use Cases
 
 1. As a non-registered user, I can register a new account with the site.
-2. As a user, I can log in to access my financial dashboard.
 3. As a user, I can set budgets for various categories like Food, Entertainment, and Utilities.
+2. As a user, I can log in to access my financial dashboard.
 4. As a user, I can add income and expense transactions.
 5. As a user, I can view a summary of my financial health, including total income, expenses, and balance.
 6. As a user, I can view graphical representations of my income and expense trends.
@@ -84,6 +84,11 @@ Example Budget with Embedded Transactions:
 * (4 points) Client-side Form Validation with VeeValidate
 - What is it?: VeeValidate is a library tailored for Vue.js that simplifies client-side form validation. It offers a suite of validation rules that can be applied to form fields to check the correctness of user inputs before the form is submitted.
 - Why use it?: Employing VeeValidate enhances user experience by providing immediate, field-level feedback. It aids in maintaining data integrity, reduces server load by catching errors client-side, and integrates seamlessly with Vue.js to build robust forms quickly and efficiently.
+* (1 points) bcrypt for Secure Password Management
+
+- What is it?: bcrypt is a robust password hashing function that builds upon the Blowfish cipher, including salt and adaptive processing.
+
+- Why use it?: It securely stores passwords with strong hashing and built-in salting, helping prevent brute-force attacks and ensuring long-term security as computational power increases.
 
 ## [Link to Initial Main Project File](app.mjs) 
 
