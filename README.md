@@ -81,10 +81,12 @@ Example Budget with Embedded Transactions:
 * (6 points) Vue.js as the front-end framework
 - What is it?: Vue.js is a progressive JavaScript framework used to create interactive user interfaces.
 - Why use it?: It is user-friendly, integrates well with other libraries and projects, and has a supportive community. Its simplicity does not sacrifice power, making it a versatile choice for many projects.
-* (4 points) Client-side Form Validation with VeeValidate
-- What is it?: VeeValidate is a library tailored for Vue.js that simplifies client-side form validation. It offers a suite of validation rules that can be applied to form fields to check the correctness of user inputs before the form is submitted.
-- Why use it?: Employing VeeValidate enhances user experience by providing immediate, field-level feedback. It aids in maintaining data integrity, reduces server load by catching errors client-side, and integrates seamlessly with Vue.js to build robust forms quickly and efficiently.
-* (1 points) bcrypt for Secure Password Management
+* (2 point) dotenv for Environment Variable Management
+
+- What is it?: dotenv is a zero-dependency module that loads environment variables from a .env file into process.env. This module ensures that sensitive information, like API keys and database passwords, is kept separate from the codebase.
+
+- Why use it?: It provides a secure and manageable way to store configuration settings and sensitive data, ensuring they are not hard-coded within the application's source code. This approach enhances security and simplifies configuration management across different development environments.
+* (2 points) bcrypt for Secure Password Management
 
 - What is it?: bcrypt is a robust password hashing function that builds upon the Blowfish cipher, including salt and adaptive processing.
 
