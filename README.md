@@ -73,14 +73,25 @@ Example Budget with Embedded Transactions:
 2. As a user, I can log in to access my financial dashboard.
 4. As a user, I can add income and expense transactions.
 5. As a user, I can view a summary of my financial health, including total income, expenses, and balance.
-6. As a user, I can view graphical representations of my income and expense trends.
-7. As a user, I can change my personal details and password
+6. As a user, I can change my personal details and password
 
 ## Research Topics
+* (5 point) Socket.IO: Real-Time Interactivity in Web Applications
 
-* (6 points) Vue.js as the front-end framework
-- What is it?: Vue.js is a progressive JavaScript framework used to create interactive user interfaces.
-- Why use it?: It is user-friendly, integrates well with other libraries and projects, and has a supportive community. Its simplicity does not sacrifice power, making it a versatile choice for many projects.
+- What is Socket.IO?
+Socket.IO is a JavaScript library that facilitates real-time, bidirectional, and event-based communication between web clients and servers. It enables instant data transfer and updates, which is critical for applications requiring real-time feedback.
+
+- Why Socket.IO?
+Integrating Socket.IO into my budget tracking application will transform the user experience by allowing real-time updates without manual page refreshes. This means that as users input transactions or adjust their budgets, the changes will be instantaneously reflected across all instances of the application. This real-time functionality is key to supporting collaborative budget management, ensuring all users see the most current data during their financial planning activities.
+
+* (2 point)Bootstrap: Enhancing User Interface with a Front-End Framework
+
+- What is Bootstrap?
+Bootstrap is a front-end framework that offers a collection of tools for creating websites and web applications. It provides HTML, CSS, and JS templates for typography, forms, buttons, navigation, and other interface elements, with a focus on responsive design for all devices.
+
+- Why Bootstrap?
+For my personal budget tracker application, Bootstrap's responsive grid system and pre-styled components can significantly speed up the development process. The uniform design patterns will ensure a professional look and feel while maintaining consistency across different pages. This aligns with the goal of providing users with an intuitive and seamless experience whether they’re tracking expenses, setting budgets, or reviewing transaction history.
+
 * (2 point) dotenv for Environment Variable Management
 
 - What is it?: dotenv is a zero-dependency module that loads environment variables from a .env file into process.env. This module ensures that sensitive information, like API keys and database passwords, is kept separate from the codebase.

@@ -1,20 +1,43 @@
 <!-- home.hbs -->
 
-<h1>Welcome to Personal Budget Tracker</h1>
+<div class="container mt-5">
+  <h1 class="text-center mb-4">Welcome to Personal Budget Tracker</h1>
 
-<!-- Login Form -->
-<h2>Login</h2>
-<form action="/login" method="POST">
-  Username: <input type="text" name="username" required>
-  Password: <input type="password" name="password" required>
-  <button type="submit">Login</button>
-</form>
+  <!-- Login Form -->
+  <div class="row">
+    <div class="col-md-6">
+      <h2>Login</h2>
+      <form action="/login" method="POST" class="mb-3">
+        <div class="form-group">
+          <label for="username">Username:</label>
+          <input type="text" name="username" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" name="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+      </form>
+    </div>
 
-<!-- Sign Up Form -->
-<h2>Sign Up</h2>
-<form action="/signup" method="POST">
-  Email: <input type="email" name="email" required>
-  Username: <input type="text" name="username" required>
-  Password: <input type="password" name="password" required>
-  <button type="submit">Sign Up</button>
-</form>
+    <!-- Sign Up Form -->
+    <div class="col-md-6">
+      <h2>Sign Up</h2>
+      <form action="/signup" method="POST" class="mb-3">
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" name="email" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="username">Username:</label>
+          <input type="text" name="username" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" name="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-success">Sign Up</button>
+      </form>
+    </div>
+  </div>
+</div>

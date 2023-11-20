@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - Personal Budget Tracker</title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+    <div id="profile-app">
+        <h1>User Profile</h1>
+        
+        <!-- Form to update personal details -->
+        <form action="/profile/update" method="post">
+   
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" value="{{user.username}}" required>
+        
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{user.email}}" required>
+        
+        <button type="submit">Save Changes</button>
+    </form>
+
+        <!-- Form to change password -->
+        <form action="/profile/change-password" method="post">
+            <label for="currentPassword">Current Password:</label>
+            <input type="password" id="currentPassword" name="currentPassword" required>
+            
+            <label for="newPassword">New Password:</label>
+            <input type="password" id="newPassword" name="newPassword" required>
+            
+            <label for="confirmNewPassword">Confirm New Password:</label>
+            <input type="password" id="confirmNewPassword" name="confirmNewPassword" required>
+            
+            <button type="submit">Change Password</button>
+        </form>
+        
+        <!-- Real-time Update Section (Optional) -->
+        <div id="real-time-updates"></div>
+        
+        <a href="/dashboard">Dashboard</a>
+        <a href="/transactions">Transactions</a>
+        <a href="/budgets">Budgets</a>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        socket.on('profile update', function(updateInfo) {
+            const updateDiv = document.getElementById('real-time-updates');
+            updateDiv.textContent = updateInfo; // Displaying the update message
+        });
+    </script>
+</body>
+</html>

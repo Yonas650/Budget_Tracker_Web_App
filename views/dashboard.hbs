@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Personal Budget Tracker</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const socket = io();
+
+            socket.on('update dashboard', (data) => {
+                if (data.userId === '{{userId}}') {
+                    document.getElementById('totalIncome').textContent = data.income;
+                    document.getElementById('totalExpense').textContent = data.totalExpense;
+                    document.getElementById('balance').textContent = data.balance;
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div id="dashboard-app">
+        <h1>Dashboard</h1>
+
+        <div>
+            <p><strong>Total Income:</strong> <span id="totalIncome">{{income}}</span></p>
+            <p><strong>Total Expense:</strong> <span id="totalExpense">{{totalExpense}}</span></p>
+            <p><strong>Balance:</strong> <span id="balance">{{balance}}</span></p>
+        </div>
+
+        <a href="/budgets">Budgets</a>
+        <a href="/transactions">Transactions</a>
+        <a href="/profile">User Profile</a>
+    </div>
+</body>
+</html>

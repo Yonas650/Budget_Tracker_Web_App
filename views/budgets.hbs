@@ -5,23 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Budgets - Personal Budget Tracker</title>
     <link rel="stylesheet" href="/css/main.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const socket = io();
+
+            socket.on('budget update', (msg) => {
+                const notifications = document.getElementById('notifications');
+                const newNotification = document.createElement('p');
+                newNotification.textContent = msg;
+                notifications.appendChild(newNotification);
+            });
+        });
+    </script>
 </head>
 <body>
     <div id="budget-app">
         <h1>Budgets</h1>
+
+        <!-- Real-time Notifications -->
+        <div id="notifications"></div>
+
         {{#if messages.error}}
-  <div class="error-message">{{messages.error}}</div>
-{{/if}}
+            <div class="error-message">{{messages.error}}</div>
+        {{/if}}
 
-{{#if messages.success}}
-  <div class="success-message">{{messages.success}}</div>
-{{/if}}
+        {{#if messages.success}}
+            <div class="success-message">{{messages.success}}</div>
+        {{/if}}
 
-        <!-- Form to enter income -->
+        <!-- Display Current Income and Form to Set/Update Income -->
+        <div>
+            <p>Current Income: {{income}}</p>
+            <p>Available Funds: {{availableFunds}}</p>
+        </div>
         <form action="/api/set-income" method="post">
             <label for="income">Enter your income:</label>
             <input type="number" id="income" name="income" required>
-            <button type="submit">Set Income</button>
+            <button type="submit">{{#if income}}Update Income{{else}}Set Income{{/if}}</button>
         </form>
 
         <!-- Form to add a new budget -->
@@ -36,39 +57,38 @@
         </form>
 
         {{#if userBudgets.length}}
-    <table>
-        <thead>
-            <tr>
-                <th>Category</th>
-                <th>Allocated</th>
-                <th>Left</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{#each userBudgets}}
-                <tr>
-                    <td>{{this.category}}</td>
-                    <td>{{this.allocatedAmount}}</td>
-                    <td>{{this.amountLeft}}</td>
-                    <td>
-
-                        <!-- Form to delete a budget -->
-                        <form action="/budgets/delete/{{this._id}}" method="post" style="display: inline;">
-                            <button type="submit">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-            {{/each}}
-        </tbody>
-    </table>
-{{else}}
-    <p>No budgets found. Add a budget to get started.</p>
-{{/if}}
-
+            <table class="budget-table">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Allocated</th>
+                        <th>Left</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each userBudgets}}
+                        <tr>
+                            <td>{{this.category}}</td>
+                            <td>{{this.allocatedAmount}}</td>
+                            <td>{{this.amountLeft}}</td>
+                            <td>
+                                <!-- Form to delete a budget -->
+                                <form action="/budgets/delete/{{this._id}}" method="post" class="delete-form" style="display: inline;">
+                                    <button type="submit">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        {{else}}
+            <p>No budgets found. Add a budget to get started.</p>
+        {{/if}}
 
         <a href="/dashboard">Dashboard</a>
         <a href="/transactions">Transactions</a>
+        <a href="/profile">User Profile</a>
     </div>
 </body>
 </html>
