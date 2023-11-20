@@ -1,6 +1,129 @@
-/* Add some basic styling here */
+/* Basic styling */
 body {
-    font-family: Arial, sans-serif;
+  font-family: 'Arial', sans-serif;
+  /* Colorful gradient background */
+  background: linear-gradient(135deg, #6ded7a, #75b3ff);
+  color: #333; /* Darker text for better contrast */
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Styling for headers */
+h1, h2, h3, h4, h5, h6 {
+  color: #a31919; /* White color for headers */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Form styling */
+form {
+  background-color: rgba(255, 255, 255, 0.8); /* Slightly transparent white */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+  margin: 20px;
+}
+
+/* Button enhancements */
+.btn {
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  border: none;
+  background-color: #007bff; /* Bootstrap primary color */
+  color: white;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.3);
+  background-color: #0056b3; /* Darkened primary color */
+}
+
+/* Interactive link styling */
+a {
+  color: #fff; /* White color links for better visibility */
+  transition: color 0.3s ease;
+  text-decoration: underline;
+}
+
+a:hover {
+  color: #ff758c; /* Light pink color on hover */
+  text-decoration: none;
+}
+
+/* Animation for certain elements */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.container, .navbar, .footer {
+  animation: fadeIn 1s ease-out;
+}
+
+/* Navbar Styling */
+.navbar {
+  background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black */
+  margin-bottom: 20px;
+}
+
+.navbar-brand, .navbar-nav .nav-link {
+  color: #fff !important;
+}
+
+/* Footer styling */
+.footer {
+  background-color: rgba(52, 58, 64, 0.9); /* Dark background with transparency */
+  color: #ffffff;
+  padding: 20px 0;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+}
+
+/* Additional responsiveness */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 24px;
   }
-  /* Other styles */
-  
+}
+/* Styling for table headers */
+.budget-table th {
+  background-color: #000000; /* Dark black background */
+  color: #ffffff; /* White text color for contrast */
+  padding: 10px;
+  text-align: left;
+}
+
+
+.budget-table td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd; /* Light border for separation */
+}
+
+/* Style for the delete button form */
+.delete-form {
+  background: none; /* Removes background */
+  border: none;    /* Removes border if any */
+  padding: 0;      /* Resets padding */
+  margin: 0;       /* Resets margin */
+}
+
+/* Style for the delete button */
+.delete-form button {
+  background: #dc3545; 
+  color: white;        /* White text */
+  border: none;        /* Removes border */
+  padding: 5px 10px;   
+  cursor: pointer;     /* Changes cursor to pointer on hover */
+  transition: background-color 0.3s; /* Smooth background color transition */
+}
+
+.delete-form button:hover {
+  background: #c82333; /* Darker red on hover */
+}
