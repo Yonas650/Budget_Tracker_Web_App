@@ -6,10 +6,11 @@ import mongoose from 'mongoose';
 import { User } from './db.mjs'; 
 import { Transaction} from './db.mjs'; 
 import { Budget } from './db.mjs';
-import bcrypt from 'bcryptjs'; // bcrypt for password hashing
+import bcrypt from 'bcryptjs'; // bcrypt for password hashing, should change it back to bcryptjs
 import path from 'path';
 import { fileURLToPath } from 'url';
-
+import http from 'http';
+import { Server as SocketIOServer } from 'socket.io';
 const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -17,6 +18,13 @@ app.set('view engine', 'hbs');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(flash());
+
+// Create an HTTP server from the Express app
+const server = http.createServer(app);
+
+// Attach Socket.IO to the server
+const io = new SocketIOServer(server);
+
 // Connect to MongoDB
 mongoose.connect(process.env.DSN)
 .then(() => console.log('MongoDB connected'))
@@ -77,51 +85,111 @@ app.post('/signup', async (req, res) => {
     }
   });
   
-  app.post('/transactions', async (req, res) => {
+  app.post('/transactions/create', async (req, res) => {
     if (!req.session.userId) {
-      return res.redirect('/login');
+        return res.redirect('/login');
     }
-  
-    const { description, amount, date, type, category } = req.body;
-    const transactionAmount = parseFloat(amount); // convert amount to a number
+
+    const { budgetId, amount, date } = req.body;
+    const transactionAmount = parseFloat(amount);
 
     try {
-      // Find the budget category
-      const budget = await Budget.findOne({
-        user: req.session.userId,
-        category: category
-      });
+        const budget = await Budget.findById(budgetId);
 
-      // If it's an expense and no budget exists, don't allow the transaction
-      if (type === 'expense' && !budget) {
-        return res.status(400).send('No budget category found for this expense.');
-      }
+        if (transactionAmount > budget.amountLeft) {
+            req.flash('error', 'Transaction amount exceeds budget left.');
+            return res.redirect('/transactions');
+        }
 
-      // Create a new transaction
-      const newTransaction = new Transaction({
-        user: req.session.userId,
-        description,
-        amount: transactionAmount,
-        date,
-        type,
-        budget: budget ? budget._id : null // Link to the corresponding budget if it exists
-      });
-  
-      await newTransaction.save();
+        const newTransaction = new Transaction({
+            user: req.session.userId,
+            budget: budgetId,
+            amount: transactionAmount,
+            date,
+            type: 'expense'
+        });
 
-      // Update the budget's spent amount if this is an expense and the budget exists
-      if (budget && type === 'expense') {
-        budget.spent += transactionAmount;
+        await newTransaction.save();
+
+        budget.amountLeft -= transactionAmount;
         await budget.save();
-      }
-  
-      res.json({ success: true, message: 'Transaction added successfully.' }); // Send a success response
+
+        // Emit an event to all connected clients
+        io.emit('transaction update');
+
+        req.flash('success', 'Transaction added successfully.');
+        res.redirect('/dashboard');
     } catch (error) {
-      console.error('Transaction creation error:', error);
-      res.status(500).json({ success: false, message: 'Error adding transaction.' });
+        console.error('Error creating transaction:', error);
+        req.flash('error', 'Error creating transaction.');
+        res.redirect('/transactions');
     }
 });
+
   
+// Route for the transactions page
+app.get('/transactions', async (req, res) => {
+  if (!req.session.userId) {
+      return res.redirect('/login');
+  }
+
+  try {
+      const userBudgets = await Budget.find({ user: req.session.userId });
+      if (userBudgets.length === 0) {
+          req.flash('error', 'Please add a budget before making transactions.');
+          return res.redirect('/budgets');
+      }
+
+      res.render('transactions', { userBudgets });
+  } catch (error) {
+      console.error('Error loading transactions page:', error);
+      req.flash('error', 'Error loading transactions page.');
+      res.redirect('/dashboard');
+  }
+});
+
+// Route for the dashboard page
+app.get('/dashboard', async (req, res) => {
+  if (!req.session.userId) {
+      return res.redirect('/login');
+  }
+
+  try {
+      const user = await User.findById(req.session.userId);
+      const transactions = await Transaction.find({ user: req.session.userId });
+
+      let totalExpense = 0;
+      transactions.forEach(transaction => {
+          if (transaction.type === 'expense') {
+              totalExpense += transaction.amount;
+          }
+      });
+
+      const balance = user.income - totalExpense;
+
+      res.render('dashboard', {
+          income: user.income,
+          totalExpense,
+          balance
+      });
+
+      // Emit event for updating dashboard whenever a user visits the dashboard page
+      io.emit('update dashboard', {
+          userId: req.session.userId,
+          income: user.income,
+          totalExpense,
+          balance
+      });
+      
+  } catch (error) {
+      console.error('Error loading dashboard:', error);
+      req.flash('error', 'Error loading dashboard.');
+      res.redirect('/');
+  }
+});
+
+
+
 app.get('/api/budgets', async (req, res) => {
     if (!req.session.userId) {
         return res.status(401).send('Not authenticated');
@@ -148,73 +216,76 @@ app.get('/api/budgets', async (req, res) => {
 
 // Route to serve the budgets page
 app.get('/budgets', async (req, res) => {
-    if (!req.session.userId) {
-      // Redirect to login page if the user is not logged in
+  if (!req.session.userId) {
       return res.redirect('/login');
-    }
-  
-    try {
-      // Fetch budgets from the database for the logged-in user
+  }
+
+  try {
+      const user = await User.findById(req.session.userId);
       const userBudgets = await Budget.find({ user: req.session.userId });
-      console.log(userBudgets);  // Check the output in your console
-      // Render the budgets page and pass the userBudgets to the template
-      res.render('budgets', { userBudgets });
-    } catch (error) {
-      console.error('Error fetching budgets:', error);
-      res.status(500).send('Error fetching budgets');
-    }
-  });
-  // POST route for creating a new budget
-  app.post('/budgets/create', async (req, res) => {
-    if (!req.session.userId) {
-      // If the user is not logged in, redirect to the login page.
-      return res.redirect('/login');
-    }
-  
-    const { category, allocatedAmount } = req.body;
-    const parsedAllocatedAmount = parseFloat(allocatedAmount);
-  
-    if (isNaN(parsedAllocatedAmount) || parsedAllocatedAmount <= 0) {
-      // If the allocated amount is not a positive number, handle the error.
-      // You might want to use flash messages to show errors.
-      req.flash('error', 'Allocated amount must be a positive number.');
-      return res.redirect('/budgets');
-    }
-  
-    const user = await User.findById(req.session.userId);
-    const totalAllocated = await Budget.aggregate([
-        { $match: { user: req.session.userId } },
-        { $group: { _id: null, total: { $sum: '$allocatedAmount' } } }
-    ]);
 
-    if (req.body.allocatedAmount + totalAllocated.total > user.income) {
-        // Handle the case where the new budget would exceed the income
-        return res.status(400).send('The total allocated budget cannot exceed your income.');
-    }
+      // Calculate the sum of all allocated amounts
+      const totalAllocated = userBudgets.reduce((sum, budget) => sum + budget.allocatedAmount, 0);
 
-    try {
-      // Create a new budget with the form values.
-      const newBudget = new Budget({
-        user: req.session.userId,
-        category,
-        allocatedAmount: parsedAllocatedAmount,
-        amountLeft: parsedAllocatedAmount,
+      // Calculate available funds
+      const availableFunds = user.income - totalAllocated;
+
+      res.render('budgets', {
+          userBudgets,
+          income: user.income, // Display the constant income of the user
+          availableFunds // Available funds after budget allocation
       });
-  
-      // Save the new budget to the database.
+  } catch (error) {
+      console.error('Error fetching budgets:', error);
+      req.flash('error', 'Error fetching budgets.');
+      res.redirect('/dashboard');
+  }
+});
+
+
+
+  // POST route for creating a new budget
+app.post('/budgets/create', async (req, res) => {
+  if (!req.session.userId) {
+      return res.redirect('/login');
+  }
+
+  const { category, allocatedAmount } = req.body;
+  const parsedAllocatedAmount = parseFloat(allocatedAmount);
+
+  if (isNaN(parsedAllocatedAmount) || parsedAllocatedAmount <= 0) {
+      return res.redirect('/budgets');
+  }
+
+  try {
+      const user = await User.findById(req.session.userId);
+      if (user.income < parsedAllocatedAmount) {
+          return res.status(400).send('Allocated amount cannot exceed available income.');
+      }
+
+      const newBudget = new Budget({
+          user: req.session.userId,
+          category,
+          allocatedAmount: parsedAllocatedAmount,
+          amountLeft: parsedAllocatedAmount,
+      });
+
       await newBudget.save();
-  
-      // After saving, redirect back to the budgets page to see the new budget.
-      // You can use flash messages to show a success message.
-      req.flash('success', 'Budget added successfully.');
+
+      // Emit an event to all connected clients
+      io.emit('budget update', {
+          message: 'A new budget category was added.',
+          category: newBudget.category,
+          allocatedAmount: newBudget.allocatedAmount
+      });
+
       res.redirect('/budgets');
-    } catch (error) {
-      // Handle any errors that occur during budget creation.
+  } catch (error) {
       console.error('Error creating budget:', error);
-      req.flash('error', 'Error creating budget.');
       res.redirect('/budgets');
-    }
-  });
+  }
+});
+
   
   
 
@@ -227,8 +298,18 @@ app.post('/budgets/delete/:budgetId', async (req, res) => {
   const { budgetId } = req.params;
 
   try {
-      await Budget.findByIdAndRemove(budgetId);
-      req.flash('success', 'Budget deleted successfully.');
+      const deletedBudget = await Budget.findByIdAndRemove(budgetId);
+      if (deletedBudget) {
+        // Emit an event to all connected clients after successful deletion
+        io.emit('budget delete', {
+            message: 'A budget category was deleted.',
+            deletedBudgetId: budgetId
+        });
+
+        req.flash('success', 'Budget deleted successfully.');
+      } else {
+        req.flash('error', 'Budget not found or already deleted.');
+      }
       res.redirect('/budgets');
   } catch (error) {
       console.error('Error deleting budget:', error);
@@ -237,11 +318,12 @@ app.post('/budgets/delete/:budgetId', async (req, res) => {
   }
 });
 
+
   
 
 
   // POST route for setting user's income in app.mjs
-app.post('/api/set-income', async (req, res) => {
+  app.post('/api/set-income', async (req, res) => {
     if (!req.session.userId) {
         return res.status(401).send('You must be logged in to set income.');
     }
@@ -249,18 +331,106 @@ app.post('/api/set-income', async (req, res) => {
     const { income } = req.body;
 
     try {
-        // Find the user by session userId and update their income
-        await User.findByIdAndUpdate(req.session.userId, { income });
-       // res.send({ success: true, message: 'Income set successfully.' });
+        // Update the user's income
+        await User.findByIdAndUpdate(req.session.userId, { income: parseFloat(income) });
+        req.flash('success', 'Income set/updated successfully.');
+        res.redirect('/budgets');
     } catch (error) {
         console.error('Error setting income:', error);
-        res.status(500).send({ success: false, message: 'Error setting income.' });
+        req.flash('error', 'Error setting income.');
+        res.redirect('/budgets');
     }
 });
 
+
+
+
+// Route to serve the profile page
+app.get('/profile', async (req, res) => {
+  if (!req.session.userId) {
+    return res.redirect('/login');
+  }
+
+  try {
+    const user = await User.findById(req.session.userId);
+    res.render('profile', { user: user });
+  } catch (error) {
+    console.error('Error fetching user details:', error);
+    res.redirect('/dashboard');
+  }
+});
+
+// Route to update user's profile
+app.post('/profile/update', async (req, res) => {
+  const { username, email } = req.body;
+  console.log('Attempting to update user profile for ID:', req.session.userId);
+  console.log('Received username:', username, 'Received email:', email);
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      req.session.userId,
+      { username, email },
+      { new: true, runValidators: true }
+    );
+    console.log('Updated user:', updatedUser);
+
+    if (!updatedUser) {
+      console.log('No user found with the given ID.');
+      req.flash('error', 'No user found to update.');
+      return res.redirect('/profile');
+    }
+
+    // Emit a Socket.IO event after successful profile update
+    io.emit('profile update', { message: 'Profile updated successfully', userId: req.session.userId });
+
+    req.flash('success', 'Profile updated successfully.');
+    res.redirect('/profile');
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    req.flash('error', 'Error updating profile.');
+    res.redirect('/profile');
+  }
+});
+
+
+
+// Route to change user's password
+app.post('/profile/change-password', async (req, res) => {
+  const { currentPassword, newPassword, confirmNewPassword } = req.body;
+  if (newPassword !== confirmNewPassword) {
+    req.flash('error', 'Passwords do not match.');
+    return res.redirect('/profile');
+  }
+
+  try {
+    const user = await User.findById(req.session.userId);
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      req.flash('error', 'Current password is incorrect.');
+      return res.redirect('/profile');
+    }
+
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedNewPassword;
+    await user.save();
+
+    req.flash('success', 'Password changed successfully.');
+    res.redirect('/profile');
+  } catch (error) {
+    console.error('Error changing password:', error);
+    req.flash('error', 'Error changing password.');
+    res.redirect('/profile');
+  }
+});
+
+
+
+
+
+
   // Server start
   const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
-    console.log(`Server is listening on port ${PORT}`);
-  });
+server.listen(PORT, () => {
+  console.log(`Server is listening on port ${PORT}`);
+});
   
